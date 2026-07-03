@@ -946,7 +946,8 @@ h1 span {
 
 .contact-section {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 280px minmax(auto, 760px);
+  justify-content: center;
   gap: clamp(40px, 6vw, 80px);
   align-items: flex-start;
   margin: 0 clamp(20px, 4vw, 64px) 48px;
@@ -985,9 +986,9 @@ h1 span {
 .contact-body .contact-desc {
   margin: 0;
   max-width: 850px;
-  line-height: 1.9;
+  line-height: 1.95;
   opacity: 0.95;
-  font-size: clamp(17px, 1.25vw, 20px);
+  font-size: clamp(18px, 1.35vw, 22px);
 }
 
 .email-link {
