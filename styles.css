@@ -824,8 +824,7 @@ h1 span {
 }
 
 .materials-grid.single-row .material-card {
-  flex: 0 0 280px;
-  max-width: 280px;
+  flex: 1 0 220px;
 }
 
 /* 素材页面折行展示的网格 */
