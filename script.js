@@ -89,6 +89,8 @@ function openWork(index) {
   const work = works[index];
   dialogImage.src = work.image;
   dialogImage.alt = `${work.title} 作品封面`;
+  dialogImage.style.objectFit = "cover";
+  dialogImage.style.backgroundColor = "";
   dialogMeta.textContent = `${work.className} · ${work.student}`;
   dialogTitle.textContent = work.title;
   dialogDescription.textContent = work.description;
@@ -102,8 +104,6 @@ renderWorks();
 // 渲染作品素材
 const materialsGrid = document.querySelector("#materialsGrid");
 
-let showAllMaterials = false;
-
 function renderMaterials() {
   if (!materialsGrid) return;
   if (!window.materialsData || window.materialsData.length === 0) {
@@ -111,27 +111,25 @@ function renderMaterials() {
     return;
   }
 
-  // 随机选择 5 个不重复的素材，并在当前会话内保持稳定
-  if (!window.randomMaterialIndices) {
-    const indices = Array.from({ length: window.materialsData.length }, (_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-    window.randomMaterialIndices = indices.slice(0, 5);
+  // 每次进入页面时随机打乱素材
+  const indices = Array.from({ length: window.materialsData.length }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
   }
 
-  const listToRender = showAllMaterials
-    ? window.materialsData.map((item, index) => ({ item, index }))
-    : window.randomMaterialIndices.map(idx => ({ item: window.materialsData[idx], index: idx }));
+  // 首页单行展示，这里限制最多展示 4 个随机素材
+  const countToShow = Math.min(4, window.materialsData.length);
+  const randomIndices = indices.slice(0, countToShow);
 
-  materialsGrid.innerHTML = listToRender
+  materialsGrid.innerHTML = randomIndices
     .map(
-      ({ item, index }) => {
+      (idx) => {
+        const item = window.materialsData[idx];
         const displayName = item.name.replace(/\.[^/.]+$/, "");
         return `
           <article class="material-card">
-            <div class="material-media" onclick="previewMaterial(${index})">
+            <div class="material-media" onclick="previewMaterial(${idx})">
               <img src="${item.url}" alt="${item.name}" />
             </div>
             <div class="material-body">
@@ -142,40 +140,15 @@ function renderMaterials() {
       }
     )
     .join("");
-
-  renderMoreButton();
 }
-
-function renderMoreButton() {
-  const container = document.querySelector("#moreMaterialsContainer");
-  if (!container) return;
-
-  if (window.materialsData.length <= 5) {
-    container.innerHTML = "";
-    return;
-  }
-
-  container.innerHTML = showAllMaterials
-    ? `<button class="card-btn secondary" style="max-width: 200px;" onclick="toggleShowMaterials(false)">收起素材</button>`
-    : `<button class="card-btn primary" style="max-width: 200px;" onclick="toggleShowMaterials(true)">更多素材</button>`;
-}
-
-window.toggleShowMaterials = function(show) {
-  showAllMaterials = show;
-  renderMaterials();
-  if (!show) {
-    const materialsSection = document.querySelector("#materials");
-    if (materialsSection) {
-      materialsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-};
 
 window.previewMaterial = function(index) {
   const item = window.materialsData[index];
   const displayName = item.name.replace(/\.[^/.]+$/, "");
   dialogImage.src = item.url;
   dialogImage.alt = `${displayName} 预览`;
+  dialogImage.style.objectFit = "contain";
+  dialogImage.style.backgroundColor = "#ffffff";
   dialogMeta.textContent = `作品素材 · ${item.size}`;
   dialogTitle.textContent = displayName;
   dialogDescription.textContent = "课程和项目所需要用到的素材图片，你可以右键或点击“查看原图”进行下载使用。";

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品素材档案馆 - Ethan AI Coding Lab</title>
+  <meta name="description" content="展示课程和项目中所需要用到的各类素材图片。提供高清预览与下载。" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .camp-header {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(203, 220, 246, 0.72);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px clamp(20px, 4vw, 64px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--muted);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--blue);
+      transform: translateX(-4px);
+    }
+
+    .camp-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(40px, 5vw, 80px) clamp(20px, 4vw, 64px);
+    }
+
+    .camp-hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .camp-hero h1 {
+      margin: 0 auto 16px;
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .camp-hero h1 span {
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+
+    .camp-hero p {
+      color: var(--muted);
+      font-size: clamp(16px, 1.2vw, 18px);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 素材页面网格特殊覆盖，让卡片显示白色背景 */
+    .materials-grid.wrap .material-media {
+      background-color: #ffffff;
+    }
+
+    /* 详情弹窗自定义修改 */
+    .material-preview-dialog img {
+      max-height: 480px;
+      object-fit: contain;
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="camp-header">
+    <div class="brand">
+      <span class="brand-mark">E</span>
+      <div>
+        <strong>Ethan AI Coding Lab</strong>
+        <small>AI & Creative Coding</small>
+      </div>
+    </div>
+    <a href="index.html#materials" class="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>返回主站</span>
+    </a>
+  </header>
+
+  <main class="camp-container">
+    <section class="camp-hero">
+      <h1>作品素材 <span>档案馆</span></h1>
+      <p>这里收集并归档了课程与开发项目中所需要用到的全部图片及美术素材，点击卡片可进行高清预览并下载使用。</p>
+    </section>
+
+    <!-- 素材折行展示网格 -->
+    <div class="materials-grid wrap" id="materialsGrid">
+      <!-- 动态生成素材卡片 -->
+    </div>
+  </main>
+
+  <!-- 素材预览弹窗 -->
+  <dialog class="work-dialog material-preview-dialog" id="workDialog">
+    <button class="dialog-close" type="button" aria-label="关闭详情">×</button>
+    <img id="dialogImage" src="" alt="" />
+    <div class="dialog-body">
+      <p id="dialogMeta"></p>
+      <h3 id="dialogTitle"></h3>
+      <p id="dialogDescription"></p>
+      <dl>
+        <div>
+          <dt>素材用途</dt>
+          <dd id="dialogTools">图片美术素材</dd>
+        </div>
+        <div>
+          <dt>使用建议</dt>
+          <dd id="dialogNote"></dd>
+        </div>
+      </dl>
+      <div style="margin-top: 24px; display: flex; gap: 16px;">
+        <a id="dialogDownloadLink" href="" download class="button primary" style="flex: 1; text-decoration: none; text-align: center;">下载素材</a>
+        <a id="dialogViewOriginal" href="" target="_blank" class="button secondary" style="flex: 1; text-decoration: none; text-align: center;">查看原图</a>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="site-footer" style="margin-top: 80px;">
+    <p>Ethan AI Coding Lab</p>
+    <a href="index.html#top">返回主站</a>
+  </footer>
+
+  <!-- 引入配置数据 -->
+  <script src="holiday-camp-data.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("materialsGrid");
+      const dialog = document.getElementById("workDialog");
+      const dialogCloseBtn = document.querySelector(".dialog-close");
+      const dialogImage = document.getElementById("dialogImage");
+      const dialogMeta = document.getElementById("dialogMeta");
+      const dialogTitle = document.getElementById("dialogTitle");
+      const dialogDescription = document.getElementById("dialogDescription");
+      const dialogNote = document.getElementById("dialogNote");
+      const dialogDownloadLink = document.getElementById("dialogDownloadLink");
+      const dialogViewOriginal = document.getElementById("dialogViewOriginal");
+
+      if (!window.materialsData || !Array.isArray(window.materialsData) || window.materialsData.length === 0) {
+        grid.innerHTML = "<p style='text-align: center; color: var(--muted); grid-column: 1/-1; padding: 60px 0;'>暂无作品素材，请在 Materials/ 目录下放置图片并运行扫描脚本。</p>";
+        return;
+      }
+
+      // 渲染所有素材
+      grid.innerHTML = window.materialsData.map((item, index) => {
+        const displayName = item.name.replace(/\.[^/.]+$/, "");
+        return `
+          <article class="material-card">
+            <div class="material-media" onclick="openPreview(${index})">
+              <img src="${item.url}" alt="${item.name}" />
+            </div>
+            <div class="material-body">
+              <h3 class="material-name" title="${displayName}">${displayName}</h3>
+              <div class="material-meta" style="margin-top: 12px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted);">
+                <span>大小: ${item.size}</span>
+                <a href="${item.url}" download="${item.name}" class="material-download" style="color: var(--blue);" title="下载素材">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      window.openPreview = function(index) {
+        const item = window.materialsData[index];
+        if (!item) return;
+        const displayName = item.name.replace(/\.[^/.]+$/, "");
+        
+        dialogImage.src = item.url;
+        dialogImage.alt = `${displayName} 预览`;
+        dialogMeta.textContent = `作品素材 · ${item.size}`;
+        dialogTitle.textContent = displayName;
+        dialogDescription.textContent = "课程和项目开发中所需要的相关图片素材，你可以右键或点击下方按钮进行高清下载使用。";
+        dialogNote.textContent = "可以在网页或 Scratch/JavaScript 游戏开发中作为精灵图、背景、障碍物或装饰元素。";
+        
+        // 设置下载与查看原图链接
+        dialogDownloadLink.href = item.url;
+        dialogDownloadLink.download = item.name;
+        dialogViewOriginal.href = item.url;
+        
+        dialog.showModal();
+      };
+
+      // 弹窗关闭方法
+      dialogCloseBtn.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>
