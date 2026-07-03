@@ -1241,8 +1241,10 @@
       } else if (playing) {
         movePlayer();
         moveEnemies();
-        collectCoins();
-        checkHazardsAndGoal();
+        if (!respawning) {
+          collectCoins();
+          checkHazardsAndGoal();
+        }
         updateCamera();
       }
       draw();
