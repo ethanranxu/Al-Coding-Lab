@@ -807,25 +807,10 @@ h1 span {
 
 /* 首页单行展示的素材网格 */
 .materials-grid.single-row {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
   margin-top: 32px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 8px 4px 16px; /* 留出阴影和悬浮的空间 */
-  margin-left: -4px;
-  margin-right: -4px;
-}
-
-.materials-grid.single-row::-webkit-scrollbar {
-  display: none;
-}
-
-.materials-grid.single-row .material-card {
-  flex: 0 0 280px;
-  max-width: 280px;
 }
 
 /* 素材页面折行展示的网格 */
@@ -1091,6 +1076,26 @@ h1 span {
   .topic-grid,
   .work-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .materials-grid.single-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 8px 4px 16px; /* 留出阴影和悬浮的空间 */
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+
+  .materials-grid.single-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .materials-grid.single-row .material-card {
+    flex: 0 0 280px;
+    max-width: 280px;
   }
 
   .journey-steps,
