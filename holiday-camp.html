@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 Term 2 Holiday Camp 学生作品集 - Ethan AI Coding Lab</title>
+  <meta name="description" content="展示 2026 Term 2 Holiday Camp 班级师生的创意编程与 AI 协作作品。" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* 继承全局变量，重写页面特有样式 */
+    .camp-header {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(203, 220, 246, 0.72);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px clamp(20px, 4vw, 64px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--muted);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--blue);
+      transform: translateX(-4px);
+    }
+
+    .camp-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(40px, 5vw, 80px) clamp(20px, 4vw, 64px);
+    }
+
+    .camp-hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .camp-hero h1 {
+      margin: 0 auto 16px;
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .camp-hero h1 span {
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+
+    .camp-hero p {
+      color: var(--muted);
+      font-size: clamp(16px, 1.2vw, 18px);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 作品网格 */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    /* 作品卡片 */
+    .portfolio-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(29, 76, 145, 0.05);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .portfolio-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+    }
+
+    /* 老师卡片特殊发光效果 */
+    .portfolio-card.teacher-card {
+      border: 2px solid rgba(23, 105, 255, 0.3);
+      box-shadow: 0 10px 40px rgba(23, 105, 255, 0.12);
+    }
+
+    .portfolio-card.teacher-card:hover {
+      box-shadow: 0 20px 50px rgba(23, 105, 255, 0.22);
+    }
+
+    .badge-role {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-role.teacher {
+      background: linear-gradient(135deg, var(--yellow), #ff9f00);
+      color: #7a3e00;
+      box-shadow: 0 4px 12px rgba(255, 189, 46, 0.3);
+    }
+
+    .badge-role.student {
+      background: rgba(23, 105, 255, 0.1);
+      color: var(--blue);
+      border: 1px solid rgba(23, 105, 255, 0.2);
+    }
+
+    .card-media {
+      position: relative;
+      padding-top: 56.25%; /* 16:9 ratio */
+      overflow: hidden;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .card-media img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .portfolio-card:hover .card-media img {
+      transform: scale(1.08);
+    }
+
+    .card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-student-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .card-role-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .card-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .card-btn.primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), #4b9dff);
+      box-shadow: 0 8px 20px rgba(23, 105, 255, 0.15);
+    }
+
+    .card-btn.primary:hover {
+      box-shadow: 0 12px 24px rgba(23, 105, 255, 0.25);
+    }
+
+    .card-btn.secondary {
+      color: var(--blue);
+      background: #ffffff;
+      border: 2px solid var(--blue);
+      box-shadow: 0 4px 12px rgba(23, 105, 255, 0.05);
+      text-decoration: none;
+    }
+
+    .card-btn.secondary:hover {
+      background: rgba(23, 105, 255, 0.05);
+      box-shadow: 0 8px 18px rgba(23, 105, 255, 0.1);
+    }
+
+    /* 占位卡片样式（未创作作品的学生） */
+    .placeholder-card {
+      background: linear-gradient(180deg, #ffffff 0%, var(--sky) 100%);
+      border: 1px dashed var(--line);
+      box-shadow: none;
+    }
+
+    .placeholder-visual {
+      position: relative;
+      padding-top: 56.25%;
+      background: linear-gradient(135deg, rgba(23, 105, 255, 0.03), rgba(124, 92, 255, 0.08));
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 用 CSS 绘制精美的创意编程氛围背景 */
+    .placeholder-visual::before {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 92, 255, 0.2) 0%, rgba(124, 92, 255, 0) 70%);
+      animation: float-glow 6s infinite ease-in-out alternate;
+    }
+
+    .placeholder-visual::after {
+      content: "</>";
+      position: absolute;
+      font-family: monospace;
+      font-weight: 900;
+      font-size: 28px;
+      color: rgba(23, 105, 255, 0.25);
+      animation: code-pulse 2s infinite ease-in-out;
+    }
+
+    .placeholder-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      background: rgba(95, 111, 137, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+
+    .placeholder-status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--muted);
+      animation: blink 1.5s infinite;
+    }
+
+    .placeholder-card .card-role-title {
+      color: #9ab0d3;
+    }
+
+    .placeholder-card .card-desc {
+      color: #a5b7d6;
+    }
+
+    /* 个人作品集弹窗样式 */
+    .portfolio-dialog {
+      border: none;
+      border-radius: 28px;
+      padding: 0;
+      max-width: 900px;
+      width: 90%;
+      background: linear-gradient(180deg, #ffffff 0%, var(--sky) 100%);
+      box-shadow: 0 30px 80px rgba(7, 22, 51, 0.25);
+      overflow: hidden;
+      animation: dialog-fade-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .portfolio-dialog::backdrop {
+      background: rgba(7, 22, 51, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .dialog-header {
+      padding: 24px 32px;
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .dialog-header h2 span {
+      color: var(--blue);
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .dialog-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s ease;
+    }
+
+    .dialog-close-btn:hover {
+      background: var(--sky);
+      color: var(--ink);
+      transform: rotate(90deg);
+    }
+
+    .dialog-content {
+      padding: 32px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .dialog-works-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 650px) {
+      .dialog-works-list {
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      }
+    }
+
+    .dialog-work-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 12px rgba(29, 76, 145, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dialog-work-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(29, 76, 145, 0.08);
+    }
+
+    .dialog-work-media {
+      position: relative;
+      padding-top: 56.25%;
+      overflow: hidden;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .dialog-work-media img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dialog-work-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .dialog-work-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      color: var(--ink);
+    }
+
+    .dialog-work-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    /* 动画定义 */
+    @keyframes float-glow {
+      0% {
+        transform: translate(-10px, -10px) scale(0.9);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(10px, 10px) scale(1.2);
+        opacity: 0.9;
+      }
+    }
+
+    @keyframes code-pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.4;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes dialog-fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="camp-header">
+    <a class="brand" href="index.html#top" aria-label="Ethan AI Coding Lab 首页">
+      <span class="brand-mark">&lt;/&gt;</span>
+      <span>
+        <strong>Ethan AI Coding Lab</strong>
+        <small>Code · Create · Think</small>
+      </span>
+    </a>
+    <a href="index.html#works" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      返回首页
+    </a>
+  </header>
+
+  <main class="camp-container">
+    <section class="camp-hero">
+      <p class="eyebrow">Creative Portfolio</p>
+      <h1>2026 Term 2 <span>Holiday Camp</span></h1>
+      <p>假期营创意编程班学生作品档案馆。点击进入每个人的作品集，即可独立运行他们的创意小游戏或网页项目。</p>
+    </section>
+
+    <div class="portfolio-grid" id="portfolioGrid">
+      <!-- 动态生成 -->
+    </div>
+  </main>
+
+  <!-- 作品集弹窗 -->
+  <dialog class="portfolio-dialog" id="portfolioDialog">
+    <div class="dialog-header">
+      <h2 id="dialogAuthorTitle">学生作品集</h2>
+      <button class="dialog-close-btn" id="dialogCloseBtn" aria-label="关闭">&times;</button>
+    </div>
+    <div class="dialog-content">
+      <div class="dialog-works-list" id="dialogWorksList">
+        <!-- 动态生成个人作品列表 -->
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="site-footer" style="margin-top: 80px;">
+    <p>Ethan AI Coding Lab</p>
+    <a href="index.html#top">返回主站</a>
+  </footer>
+
+  <!-- 引入配置数据 -->
+  <script src="holiday-camp-data.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("portfolioGrid");
+      const dialog = document.getElementById("portfolioDialog");
+      const dialogCloseBtn = document.getElementById("dialogCloseBtn");
+      const dialogAuthorTitle = document.getElementById("dialogAuthorTitle");
+      const dialogWorksList = document.getElementById("dialogWorksList");
+      
+      let currentList = [];
+
+      if (!window.holidayCampData || !Array.isArray(window.holidayCampData)) {
+        grid.innerHTML = "<p style='text-align: center; color: var(--muted); grid-column: 1/-1;'>未找到作品集数据。</p>";
+        return;
+      }
+
+      // 分离老师和学生
+      const teacher = window.holidayCampData.find(item => item.role === "teacher");
+      const students = window.holidayCampData.filter(item => item.role !== "teacher");
+
+      // 学生按姓名拼音/字母升序排序
+      students.sort((a, b) => {
+        return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+      });
+
+      // 合并，老师放最前面
+      if (teacher) currentList.push(teacher);
+      currentList.push(...students);
+
+      // 渲染卡片
+      grid.innerHTML = currentList.map((person, index) => {
+        const isTeacher = person.role === "teacher";
+        
+        // 如果有作品
+        if (person.works && person.works.length > 0) {
+          // 随机选择一个作品图片作为封面
+          const randomIndex = Math.floor(Math.random() * person.works.length);
+          const coverWork = person.works[randomIndex];
+          const workCount = person.works.length;
+          
+          return `
+            <article class="portfolio-card ${isTeacher ? 'teacher-card' : ''}">
+              <span class="badge-role ${person.role}">${isTeacher ? 'Teacher' : 'Student'}</span>
+              <div class="card-media" onclick="openPortfolioModal(${index})">
+                <img src="${coverWork.screenshot || 'assets/project-mini-game.png'}" alt="${person.name} 的作品封面" />
+              </div>
+              <div class="card-body">
+                <span class="card-student-name">${person.name}</span>
+                <span class="card-role-title">${isTeacher ? '创意编程教师' : 'Holiday Camp 学员'}</span>
+                <p class="card-desc">在本次假期营中，完成了包含网页制作、AI 协作和横版游戏开发等多项编程挑战，共创作了 ${workCount} 个优秀作品。</p>
+                <div class="card-actions">
+                  <button class="card-btn primary" onclick="openPortfolioModal(${index})">查看作品集 (${workCount})</button>
+                </div>
+              </div>
+            </article>
+          `;
+        } else {
+          // 没有作品，展示精美的占位卡片
+          return `
+            <article class="portfolio-card placeholder-card">
+              <span class="badge-role student">Student</span>
+              <div class="placeholder-visual"></div>
+              <div class="card-body">
+                <span class="card-student-name">${person.name}</span>
+                <div class="placeholder-status">
+                  <span class="dot"></span>
+                  项目孵化中...
+                </div>
+                <span class="card-role-title">Holiday Camp 学员</span>
+                <p class="card-desc">作品正在使用 AI 与编程进行头脑风暴和基础代码构建，精彩内容敬请期待。</p>
+              </div>
+            </article>
+          `;
+        }
+      }).join("");
+
+      // 弹窗打开方法
+      window.openPortfolioModal = function(index) {
+        const person = currentList[index];
+        if (!person || !person.works || person.works.length === 0) return;
+
+        const isTeacher = person.role === "teacher";
+        dialogAuthorTitle.innerHTML = `<span>${person.name}</span> 的作品集 <small style='font-size: 14px; font-weight: normal; color: var(--muted); margin-left: 8px;'>(共 ${person.works.length} 个作品)</small>`;
+        
+        dialogWorksList.innerHTML = person.works.map(work => {
+          const downloadBtnHtml = work.downloadUrl 
+            ? `<a href="${work.downloadUrl}" download="${work.title} 素材.png" class="card-btn secondary">下载素材</a>`
+            : '';
+          
+          return `
+            <div class="dialog-work-item">
+              <div class="dialog-work-media" onclick="window.open('${work.url}', '_blank')">
+                <img src="${work.screenshot || 'assets/project-mini-game.png'}" alt="${work.title} 截图" />
+              </div>
+              <div class="dialog-work-info">
+                <h3 class="dialog-work-title">${work.title}</h3>
+                <p class="dialog-work-desc">${isTeacher ? '新西兰 Kiwi 鸟平台冒险游戏标杆项目！控制 Kiwi 鸟在充满挑战的关卡中前进，收集物品并到达终点。这是假期营中师生共同挑战的创意网页游戏。' : '使用自然语言与 AI 协作编程，设计并制作了符合创意主题的网页互动作品。'}</p>
+                <div class="card-actions" style="margin-top: auto; width: 100%;">
+                  <button class="card-btn primary" onclick="window.open('${work.url}', '_blank')">运行作品</button>
+                  ${downloadBtnHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        dialog.showModal();
+      };
+
+      // 弹窗关闭方法
+      dialogCloseBtn.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

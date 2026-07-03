@@ -6,11 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ethan AI Coding Lab</title>
   <meta name="description" content="Ethan AI Coding Lab，记录孩子们用 AI 与编程完成真实项目的学习过程与作品。" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <header class="site-header" id="top">
+  <div id="top"></div>
+  <header class="site-header">
     <a class="brand" href="#top" aria-label="Ethan AI Coding Lab 首页">
       <span class="brand-mark">&lt;/&gt;</span>
       <span>
@@ -27,8 +29,13 @@
       <a href="#top" class="active">首页</a>
       <a href="#about">关于 Ethan</a>
       <a href="#topics">学习主题</a>
-      <a href="#works">学生作品</a>
-      <a href="#classroom">课堂记录</a>
+      <div class="dropdown">
+        <a href="#works" class="dropdown-trigger">学生作品</a>
+        <div class="dropdown-menu">
+          <a href="holiday-camp.html">HOLIDAY CAMP</a>
+        </div>
+      </div>
+      <a href="#materials">作品素材</a>
       <a href="#contact">联系</a>
     </nav>
   </header>
@@ -185,29 +192,16 @@
       <div class="work-grid" id="workGrid"></div>
     </section>
 
-    <section class="classroom-section section-anchor" id="classroom">
+    <section class="materials-section section-anchor" id="materials">
       <div class="section-heading centered">
-        <p class="eyebrow">Classroom Notes</p>
-        <h2>课堂记录</h2>
-        <p>这里可以慢慢沉淀课堂照片、项目过程、展示瞬间和孩子们的复盘文字。</p>
+        <p class="eyebrow">Project Materials</p>
+        <h2>作品素材</h2>
+        <p>展示课程和项目中所需要用到的各类素材图片。可供随时参考与预览。</p>
       </div>
-      <div class="classroom-list">
-        <article>
-          <span>01</span>
-          <strong>项目构思</strong>
-          <p>孩子先把自己的兴趣变成一个可执行的小项目。</p>
-        </article>
-        <article>
-          <span>02</span>
-          <strong>制作过程</strong>
-          <p>记录草图、提示词、代码迭代和界面修改。</p>
-        </article>
-        <article>
-          <span>03</span>
-          <strong>展示表达</strong>
-          <p>鼓励孩子讲清楚自己的作品、选择和下一步计划。</p>
-        </article>
+      <div class="materials-grid" id="materialsGrid">
+        <!-- 动态生成素材卡片 -->
       </div>
+      <div id="moreMaterialsContainer" style="display: flex; justify-content: center; margin-top: 32px;"></div>
     </section>
 
     <section class="contact-section section-anchor" id="contact">
@@ -245,6 +239,7 @@
     </div>
   </dialog>
 
+  <script src="holiday-camp-data.js"></script>
   <script src="script.js"></script>
 </body>
 

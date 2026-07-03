@@ -99,6 +99,93 @@ function openWork(index) {
 
 renderWorks();
 
+// 渲染作品素材
+const materialsGrid = document.querySelector("#materialsGrid");
+
+let showAllMaterials = false;
+
+function renderMaterials() {
+  if (!materialsGrid) return;
+  if (!window.materialsData || window.materialsData.length === 0) {
+    materialsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px 0;">暂无作品素材，请在 Materials/ 目录下放置图片并运行扫描脚本。</p>`;
+    return;
+  }
+
+  // 随机选择 5 个不重复的素材，并在当前会话内保持稳定
+  if (!window.randomMaterialIndices) {
+    const indices = Array.from({ length: window.materialsData.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    window.randomMaterialIndices = indices.slice(0, 5);
+  }
+
+  const listToRender = showAllMaterials
+    ? window.materialsData.map((item, index) => ({ item, index }))
+    : window.randomMaterialIndices.map(idx => ({ item: window.materialsData[idx], index: idx }));
+
+  materialsGrid.innerHTML = listToRender
+    .map(
+      ({ item, index }) => {
+        const displayName = item.name.replace(/\.[^/.]+$/, "");
+        return `
+          <article class="material-card">
+            <div class="material-media" onclick="previewMaterial(${index})">
+              <img src="${item.url}" alt="${item.name}" />
+            </div>
+            <div class="material-body">
+              <h3 class="material-name" title="${displayName}">${displayName}</h3>
+            </div>
+          </article>
+        `;
+      }
+    )
+    .join("");
+
+  renderMoreButton();
+}
+
+function renderMoreButton() {
+  const container = document.querySelector("#moreMaterialsContainer");
+  if (!container) return;
+
+  if (window.materialsData.length <= 5) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = showAllMaterials
+    ? `<button class="card-btn secondary" style="max-width: 200px;" onclick="toggleShowMaterials(false)">收起素材</button>`
+    : `<button class="card-btn primary" style="max-width: 200px;" onclick="toggleShowMaterials(true)">更多素材</button>`;
+}
+
+window.toggleShowMaterials = function(show) {
+  showAllMaterials = show;
+  renderMaterials();
+  if (!show) {
+    const materialsSection = document.querySelector("#materials");
+    if (materialsSection) {
+      materialsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+};
+
+window.previewMaterial = function(index) {
+  const item = window.materialsData[index];
+  const displayName = item.name.replace(/\.[^/.]+$/, "");
+  dialogImage.src = item.url;
+  dialogImage.alt = `${displayName} 预览`;
+  dialogMeta.textContent = `作品素材 · ${item.size}`;
+  dialogTitle.textContent = displayName;
+  dialogDescription.textContent = "课程和项目所需要用到的素材图片，你可以右键或点击“查看原图”进行下载使用。";
+  dialogTools.textContent = "图片素材";
+  dialogNote.textContent = "可以在项目中作为精灵图（Sprite sheet）、背景或装饰元素。";
+  dialog.showModal();
+};
+
+renderMaterials();
+
 filters.forEach((button) => {
   button.addEventListener("click", () => {
     filters.forEach((item) => item.classList.remove("active"));
@@ -146,8 +233,11 @@ const observer = new IntersectionObserver(
       if (!entry.isIntersecting) return;
       const id = entry.target.id || "top";
       navLinks.forEach((link) => {
-        const target = link.getAttribute("href").replace("#", "");
-        link.classList.toggle("active", target === id);
+        const href = link.getAttribute("href");
+        if (href && href.startsWith("#")) {
+          const target = href.replace("#", "") || "top";
+          link.classList.toggle("active", target === id);
+        }
       });
     });
   },
