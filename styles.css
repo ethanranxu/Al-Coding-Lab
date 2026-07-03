@@ -964,27 +964,30 @@ h1 span {
 
 .contact-header {
   margin: 0;
-}
-
-.contact-header h2 {
-  margin: 0;
-  font-size: clamp(30px, 4vw, 48px);
-  line-height: 1.2;
-}
-
-.contact-body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
 }
 
+.contact-title-group h2 {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.2;
+}
+
+.contact-body {
+  display: block;
+  padding-top: 8px; /* 对齐标题第一行 */
+}
+
 .contact-body .contact-desc {
   margin: 0;
-  max-width: 720px;
-  line-height: 1.8;
+  max-width: 850px;
+  line-height: 1.9;
   opacity: 0.95;
-  font-size: clamp(15px, 1.1vw, 17px);
+  font-size: clamp(16px, 1.15vw, 18px);
 }
 
 .email-link {

@@ -118,8 +118,8 @@ function renderMaterials() {
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
 
-  // 首页单行展示，这里限制最多展示 4 个随机素材
-  const countToShow = Math.min(4, window.materialsData.length);
+  // 首页单行展示，这里限制最多展示 5 个随机素材
+  const countToShow = Math.min(5, window.materialsData.length);
   const randomIndices = indices.slice(0, countToShow);
 
   materialsGrid.innerHTML = randomIndices
