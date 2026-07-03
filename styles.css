@@ -946,8 +946,8 @@ h1 span {
 
 .contact-section {
   display: grid;
-  grid-template-columns: clamp(200px, 22vw, 300px) 1fr;
-  gap: clamp(32px, 5vw, 64px);
+  grid-template-columns: 340px 1fr;
+  gap: clamp(40px, 6vw, 80px);
   align-items: flex-start;
   margin: 0 clamp(20px, 4vw, 64px) 48px;
   padding: clamp(34px, 5vw, 56px);
@@ -967,7 +967,7 @@ h1 span {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 24px;
+  gap: 20px;
 }
 
 .contact-title-group h2 {
@@ -987,28 +987,23 @@ h1 span {
   max-width: 850px;
   line-height: 1.9;
   opacity: 0.95;
-  font-size: clamp(16px, 1.15vw, 18px);
+  font-size: clamp(17px, 1.25vw, 20px);
 }
 
 .email-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px;
-  padding: 0 28px;
-  color: var(--blue-dark);
-  font-weight: 900;
-  font-size: 15px;
-  background: #fff;
-  border-radius: 14px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  display: inline-block;
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(15px, 1.1vw, 17px);
+  text-decoration: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  padding-bottom: 2px;
+  transition: border-color 0.2s ease, opacity 0.2s ease;
 }
 
 .email-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(13, 93, 245, 0.22);
-  background: var(--sky);
+  opacity: 0.9;
+  border-color: rgba(255, 255, 255, 1);
 }
 
 .site-footer {
@@ -1318,10 +1313,10 @@ h1 span {
   }
 
   .email-link {
-    width: 100%;
+    width: auto;
     word-break: break-all;
     font-size: clamp(14px, 4.5vw, 18px);
-    text-align: center;
+    text-align: left;
   }
 
   .work-dialog[open] {
