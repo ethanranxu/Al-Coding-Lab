@@ -930,12 +930,13 @@ h1 span {
 }
 
 .contact-section {
-  display: grid;
-  grid-template-columns: minmax(280px, 1fr) auto;
-  gap: 30px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  gap: 28px;
   margin: 0 clamp(20px, 4vw, 64px) 48px;
-  padding: clamp(34px, 5vw, 56px);
+  padding: clamp(40px, 6vw, 64px) clamp(20px, 5vw, 64px);
   background: linear-gradient(135deg, #0d5df5, #38c9a5);
   border-radius: 28px;
   box-shadow: var(--shadow);
@@ -948,14 +949,16 @@ h1 span {
 }
 
 .contact-section h2 {
+  margin-top: 0;
   margin-bottom: 12px;
   font-size: clamp(30px, 4vw, 48px);
 }
 
 .contact-section p {
-  max-width: 680px;
-  margin-bottom: 0;
+  max-width: 720px;
+  margin: 0 auto;
   opacity: 0.9;
+  line-height: 1.8;
 }
 
 .email-link {
@@ -963,11 +966,17 @@ h1 span {
   align-items: center;
   justify-content: center;
   min-height: 54px;
-  padding: 0 24px;
+  padding: 0 32px;
   color: var(--blue-dark);
   font-weight: 900;
   background: #fff;
   border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.email-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(13, 93, 245, 0.25);
 }
 
 .site-footer {
