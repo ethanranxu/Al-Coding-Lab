@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kiwi Python Quest - 3 Levels</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --panel: #fff7dc;
+      --panel-2: #f4d075;
+      --accent: #e33d31;
+      --accent-2: #139d9f;
+      --sky: #69b8f5;
+      --ground: #9b5a2a;
+      --ground-dark: #633b22;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(#76c9ff 0%, #e8f8ff 64%, #9dd861 64%, #6fa83c 100%);
+      color: var(--ink);
+      font-family: ui-rounded, "Avenir Next", Avenir, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .shell {
+      width: min(1180px, 100%);
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 3px solid #1a3140;
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 5px 0 #1a3140;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-weight: 900;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .cap {
+      width: 28px;
+      height: 18px;
+      position: relative;
+      border: 3px solid #1a3140;
+      border-radius: 16px 16px 5px 5px;
+      background: var(--accent);
+    }
+
+    .cap::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      bottom: -3px;
+      width: 14px;
+      height: 7px;
+      border: 3px solid #1a3140;
+      border-left: 0;
+      border-radius: 0 10px 10px 0;
+      background: var(--accent);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      font-weight: 850;
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+
+    .stat {
+      min-width: 86px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+
+    button {
+      width: 38px;
+      height: 32px;
+      border: 3px solid #1a3140;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #1a3140;
+      font: 900 17px/1 system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1a3140;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1a3140;
+    }
+
+    .game-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 96px);
+      min-height: 360px;
+      border: 4px solid #102837;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--sky);
+      box-shadow: 0 9px 0 #102837;
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--sky);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      pointer-events: none;
+    }
+
+    .message {
+      width: min(560px, 92%);
+      border: 4px solid #142c38;
+      border-radius: 8px;
+      background: rgba(255, 247, 220, 0.95);
+      box-shadow: 0 7px 0 #142c38;
+      padding: 18px;
+      text-align: center;
+      transform: translateY(-4px);
+    }
+
+    .message[hidden] {
+      display: none;
+    }
+
+    .message h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 5vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .message p {
+      margin: 0;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .touch {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      display: none;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .pad {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .touch button {
+      width: 54px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(6px);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 8px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr auto;
+      }
+
+      .stats {
+        order: 3;
+        grid-column: 1 / -1;
+        justify-content: space-between;
+        gap: 4px;
+        font-size: 12px;
+      }
+
+      .stat {
+        min-width: 0;
+      }
+
+      .brand {
+        font-size: 14px;
+      }
+
+      .game-wrap {
+        min-height: 430px;
+        aspect-ratio: 9 / 12;
+      }
+
+      .touch {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="topbar" aria-label="Game status">
+      <div class="brand"><span class="cap" aria-hidden="true"></span><span>Kiwi Python Quest</span></div>
+      <div class="stats">
+        <span class="stat">Score <b id="score">000000</b></span>
+        <span class="stat">Stars <b id="coins">00</b></span>
+        <span class="stat">Level <b id="world">1-1</b></span>
+        <span class="stat">Time <b id="time">300</b></span>
+      </div>
+      <div class="controls">
+        <button id="mute" type="button" aria-label="Toggle sound" title="Sound">♪</button>
+        <button id="restart" type="button" aria-label="Restart level" title="Restart">↻</button>
+      </div>
+    </section>
+
+    <section class="game-wrap" id="gameWrap">
+      <canvas id="game" width="960" height="540" aria-label="A side-scrolling kiwi platform game set in level one"></canvas>
+      <div class="overlay">
+        <div class="message" id="message">
+          <h1 id="messageTitle">Kiwi Quest</h1>
+          <p id="messageText">Press Enter or tap to start. Move with arrow keys or A/D, jump with Space, W, or ↑.</p>
+        </div>
+      </div>
+      <div class="touch" aria-label="Touch controls">
+        <div class="pad">
+          <button data-key="left" aria-label="Move left">←</button>
+          <button data-key="right" aria-label="Move right">→</button>
+        </div>
+        <div class="pad">
+          <button data-key="jump" aria-label="Jump">↑</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const coinsEl = document.getElementById("coins");
+    const worldEl = document.getElementById("world");
+    const timeEl = document.getElementById("time");
+    const message = document.getElementById("message");
+    const messageTitle = document.getElementById("messageTitle");
+    const messageText = document.getElementById("messageText");
+    const restartButton = document.getElementById("restart");
+    const muteButton = document.getElementById("mute");
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const GROUND_Y = 456;
+    const TILE = 36;
+    let levelWidth = 4620;
+    let finishX = 4175;
+    const ASSET_PATH = "assets/";
+    const assetFiles = {
+      kiwi: "kiwi.png",
+      star: "star.png",
+      monster: "monster.png",
+      door: "door.png",
+      grassBlock: "grass_block.png",
+      spikes: "spikes.png"
+    };
+    const assets = {};
+
+    for (const [name, file] of Object.entries(assetFiles)) {
+      const image = new Image();
+      image.src = ASSET_PATH + file;
+      assets[name] = image;
+    }
+
+    const keys = { left: false, right: false, jump: false };
+    const state = {
+      mode: "ready",
+      level: 0,
+      camera: 0,
+      score: 0,
+      coins: 0,
+      checkpointScore: 0,
+      checkpointCoins: 0,
+      time: 300,
+      muted: false,
+      lastTick: 0,
+      jumpBuffer: 0,
+      coyote: 0,
+      particles: [],
+      floaters: []
+    };
+
+    const playerStart = { x: 84, y: 300 };
+    const player = {
+      x: playerStart.x,
+      y: playerStart.y,
+      w: 38,
+      h: 54,
+      vx: 0,
+      vy: 0,
+      dir: 1,
+      grounded: false,
+      invuln: 0,
+      alive: true
+    };
+
+    const solids = [];
+    const enemies = [];
+    const coins = [];
+    const hazards = [];
+    const questionBlocks = [];
+    const decorations = [];
+
+    function rect(x, y, w, h, kind = "brick") {
+      const block = { x, y, w, h, kind, used: false };
+      solids.push(block);
+      return block;
+    }
+
+    function groundSegments(segments) {
+      segments.forEach(([x, w]) => rect(x, GROUND_Y, w, 84, "ground"));
+    }
+
+    function addBlocks(items, kind = "brick") {
+      items.forEach(([x, y]) => {
+        const block = rect(x, y, TILE, TILE, kind);
+        if (kind === "question") questionBlocks.push(block);
+      });
+    }
+
+    function addCoins(items) {
+      items.forEach(([x, y]) => coins.push({ x, y, r: 10, taken: false, spin: Math.random() * 6 }));
+    }
+
+    function addEnemies(items) {
+      items.forEach(([x, y, speed = 44], i) => {
+        enemies.push({ x, y: y - 12, w: 54, h: 40, vx: i % 2 ? speed : -speed, alive: true, squash: 0 });
+      });
+    }
+
+    function addHazards(items) {
+      items.forEach(([x, y = 426, w = 96]) => hazards.push({ x, y, w, h: 30 }));
+    }
+
+    function addScenery(width) {
+      for (let i = 0; i < Math.ceil(width / 520); i++) decorations.push({ type: "hill", x: 280 + i * 510, y: GROUND_Y });
+      for (let i = 0; i < Math.ceil(width / 330); i++) decorations.push({ type: "bush", x: 120 + i * 330, y: GROUND_Y });
+    }
+
+    function addStairs(x, count, direction = 1) {
+      for (let i = 0; i < count; i++) {
+        const height = direction > 0 ? i + 1 : count - i;
+        rect(x + i * TILE, GROUND_Y - TILE * height, TILE, TILE * height, "stone");
+      }
+    }
+
+    const levels = [
+      {
+        name: "Meadow Start",
+        width: 4620,
+        finish: 4175,
+        time: 300,
+        build() {
+          groundSegments([[0, 970], [1060, 850], [2020, 1100], [3240, 1380]]);
+          addBlocks([[480, 344], [516, 344], [552, 344], [1390, 344], [1426, 344], [1462, 344], [1498, 344], [2450, 344], [2486, 344], [2522, 344]]);
+          addBlocks([[660, 344], [1340, 344], [1548, 344], [2270, 310], [2306, 310], [2740, 344]], "question");
+          for (let i = 0; i < 4; i++) rect(1780 + i * TILE, GROUND_Y - TILE * (i + 1), TILE, TILE * (i + 1), "pipe");
+          addStairs(2930, 5, 1);
+          addStairs(3330, 5, -1);
+          addCoins([[420, 302], [456, 280], [492, 302], [680, 294], [1320, 302], [1386, 294], [1510, 294], [1710, 384], [2160, 286], [2200, 264], [2240, 286], [2738, 294], [3060, 384], [3098, 384], [3520, 384], [3560, 384], [3600, 384]]);
+          addEnemies([[740, 416], [1250, 416], [1650, 416], [2360, 416], [3160, 416], [3720, 416]]);
+          addHazards([[930], [1942], [2872], [3222], [3860]]);
+          rect(4186, 250, 118, 206, "door");
+        }
+      },
+      {
+        name: "Spike Valley",
+        width: 5180,
+        finish: 4745,
+        time: 330,
+        build() {
+          groundSegments([[0, 760], [900, 720], [1760, 620], [2540, 1040], [3760, 1420]]);
+          addBlocks([[520, 332], [556, 332], [1120, 324], [1156, 324], [1192, 324], [2180, 316], [2216, 316], [2252, 316], [3840, 334], [3876, 334], [3912, 334]]);
+          addBlocks([[700, 336], [1450, 312], [1900, 312], [3000, 330], [3470, 300], [4300, 318]], "question");
+          rect(1650, 376, 150, 34, "pipe");
+          rect(2360, 360, 180, 34, "pipe");
+          addStairs(3200, 4, 1);
+          addStairs(3550, 4, -1);
+          addCoins([[430, 384], [520, 286], [560, 266], [600, 286], [1040, 282], [1120, 270], [1200, 282], [1460, 266], [1840, 270], [1900, 250], [1960, 270], [2740, 392], [2820, 372], [2900, 392], [3468, 254], [3860, 288], [3900, 288], [4300, 270], [4540, 384]]);
+          addEnemies([[620, 416, 42], [1260, 416, 50], [2100, 416, 50], [2860, 416, 54], [3980, 416, 58], [4420, 416, 58]]);
+          addHazards([[780, 426, 112], [1628, 426, 128], [2388, 426, 120], [3680, 426, 112], [4620, 426, 108]]);
+          rect(4755, 250, 118, 206, "door");
+        }
+      },
+      {
+        name: "Sky Door Run",
+        width: 5750,
+        finish: 5320,
+        time: 360,
+        build() {
+          groundSegments([[0, 700], [840, 460], [1460, 760], [2400, 560], [3160, 700], [4020, 1730]]);
+          addBlocks([[420, 342], [456, 342], [492, 342], [920, 304], [956, 304], [1680, 340], [1716, 340], [1752, 340], [2520, 300], [2556, 300], [3340, 330], [3376, 330], [4220, 310], [4256, 310], [4292, 310]]);
+          addBlocks([[620, 326], [1180, 292], [1540, 318], [2180, 304], [2860, 318], [3650, 294], [4580, 312], [4920, 294]], "question");
+          rect(1300, 372, 160, 34, "pipe");
+          rect(2980, 362, 180, 34, "pipe");
+          rect(3860, 342, 160, 34, "pipe");
+          addStairs(4680, 6, 1);
+          addStairs(5030, 5, -1);
+          addCoins([[380, 386], [420, 294], [460, 274], [500, 294], [920, 258], [960, 238], [1000, 258], [1180, 246], [1540, 272], [1840, 284], [1880, 264], [1920, 284], [2180, 258], [2520, 254], [2560, 234], [2600, 254], [2860, 272], [3360, 284], [3650, 248], [4240, 264], [4580, 266], [4920, 246], [5160, 382]]);
+          addEnemies([[570, 416, 48], [1040, 416, 54], [1850, 416, 58], [2650, 416, 58], [3500, 416, 62], [4380, 416, 62], [4880, 416, 66]]);
+          addHazards([[700, 426, 122], [1320, 426, 128], [2250, 426, 118], [3020, 426, 120], [3890, 426, 120], [5200, 426, 110]]);
+          rect(5330, 250, 118, 206, "door");
+        }
+      }
+    ];
+
+    function makeLevel() {
+      solids.length = 0;
+      enemies.length = 0;
+      coins.length = 0;
+      hazards.length = 0;
+      questionBlocks.length = 0;
+      decorations.length = 0;
+      const level = levels[state.level];
+      levelWidth = level.width;
+      finishX = level.finish;
+      addScenery(level.width);
+      level.build();
+    }
+
+    function resetLevel(mode = "ready", options = {}) {
+      if (options.newGame) {
+        state.level = 0;
+        state.score = 0;
+        state.coins = 0;
+        state.checkpointScore = 0;
+        state.checkpointCoins = 0;
+      }
+      makeLevel();
+      Object.assign(player, { x: playerStart.x, y: playerStart.y, vx: 0, vy: 0, dir: 1, grounded: false, invuln: 0, alive: true });
+      Object.assign(state, {
+        mode,
+        camera: 0,
+        score: options.fromCheckpoint ? state.checkpointScore : state.score,
+        coins: options.fromCheckpoint ? state.checkpointCoins : state.coins,
+        time: levels[state.level].time,
+        lastTick: performance.now(),
+        jumpBuffer: 0,
+        coyote: 0,
+        particles: [],
+        floaters: []
+      });
+      updateHud();
+      showMessage(`Level ${state.level + 1}: ${levels[state.level].name}`, "Press Enter or tap to start. Move with arrow keys or A/D, jump with Space, W, or ↑.");
+    }
+
+    function startGame() {
+      if (state.mode === "ready") {
+        state.mode = "play";
+        state.lastTick = performance.now();
+        message.hidden = true;
+      } else if (state.mode === "levelclear") {
+        state.level += 1;
+        state.checkpointScore = state.score;
+        state.checkpointCoins = state.coins;
+        resetLevel("play");
+        message.hidden = true;
+      } else if (state.mode === "lost" || state.mode === "won") {
+        resetLevel("play", { newGame: state.mode === "won", fromCheckpoint: state.mode === "lost" });
+        message.hidden = true;
+      }
+    }
+
+    function showMessage(title, text) {
+      messageTitle.textContent = title;
+      messageText.textContent = text;
+      message.hidden = false;
+    }
+
+    function updateHud() {
+      scoreEl.textContent = String(state.score).padStart(6, "0");
+      coinsEl.textContent = String(state.coins).padStart(2, "0");
+      worldEl.textContent = `1-${state.level + 1}`;
+      timeEl.textContent = Math.max(0, Math.ceil(state.time));
+    }
+
+    function sound(type) {
+      if (state.muted) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ac = sound.ac || (sound.ac = new AudioContext());
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      const now = ac.currentTime;
+      const map = {
+        jump: [260, 430, 0.08],
+        coin: [880, 1320, 0.09],
+        bump: [130, 90, 0.08],
+        stomp: [180, 80, 0.12],
+        win: [520, 780, 0.22],
+        lose: [180, 80, 0.35]
+      }[type] || [220, 220, 0.08];
+      o.type = type === "coin" ? "square" : "triangle";
+      o.frequency.setValueAtTime(map[0], now);
+      o.frequency.exponentialRampToValueAtTime(map[1], now + map[2]);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + map[2]);
+      o.connect(g).connect(ac.destination);
+      o.start(now);
+      o.stop(now + map[2] + 0.02);
+    }
+
+    function collide(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function moveEntity(ent, dt) {
+      ent.x += ent.vx * dt;
+      for (const s of solids) {
+        if (!collide(ent, s) || s.kind === "pole" || s.kind === "door") continue;
+        if (ent.vx > 0) ent.x = s.x - ent.w;
+        if (ent.vx < 0) ent.x = s.x + s.w;
+        ent.vx = 0;
+      }
+
+      ent.y += ent.vy * dt;
+      ent.grounded = false;
+      for (const s of solids) {
+        if (!collide(ent, s) || s.kind === "pole" || s.kind === "door") continue;
+        if (ent.vy > 0) {
+          ent.y = s.y - ent.h;
+          ent.vy = 0;
+          ent.grounded = true;
+        } else if (ent.vy < 0) {
+          ent.y = s.y + s.h;
+          ent.vy = 0;
+          hitBlock(s);
+        }
+      }
+    }
+
+    function hitBlock(block) {
+      if (block.kind === "question" && !block.used) {
+        block.used = true;
+        state.score += 200;
+        state.coins += 1;
+        state.floaters.push({ x: block.x + 18, y: block.y - 4, text: "+200", t: 0 });
+        state.particles.push({ x: block.x + 18, y: block.y, vx: 0, vy: -150, life: 0.45, coin: true });
+        sound("coin");
+      } else if (block.kind === "brick") {
+        state.floaters.push({ x: block.x + 18, y: block.y, text: "bonk", t: 0 });
+        sound("bump");
+      }
+      updateHud();
+    }
+
+    function update(dt) {
+      if (state.mode !== "play") return;
+      state.time -= dt;
+      if (state.time <= 0) lose();
+
+      const accel = player.grounded ? 1700 : 900;
+      const friction = player.grounded ? 0.82 : 0.96;
+      if (keys.left) {
+        player.vx -= accel * dt;
+        player.dir = -1;
+      }
+      if (keys.right) {
+        player.vx += accel * dt;
+        player.dir = 1;
+      }
+      if (!keys.left && !keys.right) player.vx *= friction;
+      player.vx = Math.max(-235, Math.min(235, player.vx));
+      player.vy += 1280 * dt;
+      if (keys.jump) {
+        state.jumpBuffer = 0.14;
+        keys.jump = false;
+      } else {
+        state.jumpBuffer = Math.max(0, state.jumpBuffer - dt);
+      }
+      state.coyote = player.grounded ? 0.12 : Math.max(0, state.coyote - dt);
+      if (state.jumpBuffer > 0 && state.coyote > 0) {
+        player.vy = -690;
+        player.grounded = false;
+        state.coyote = 0;
+        state.jumpBuffer = 0;
+        sound("jump");
+      }
+
+      moveEntity(player, dt);
+      player.x = Math.max(0, Math.min(levelWidth - player.w, player.x));
+
+      if (player.y > H + 100) lose();
+      if (player.invuln > 0) player.invuln -= dt;
+
+      for (const coin of coins) {
+        if (!coin.taken && collide(player, { x: coin.x - 18, y: coin.y - 18, w: 36, h: 36 })) {
+          coin.taken = true;
+          state.score += 100;
+          state.coins += 1;
+          state.floaters.push({ x: coin.x, y: coin.y, text: "+100", t: 0 });
+          sound("coin");
+        }
+        coin.spin += dt * 8;
+      }
+
+      for (const hazard of hazards) {
+        if (collide(player, { x: hazard.x + 12, y: hazard.y + 7, w: hazard.w - 24, h: hazard.h - 7 })) {
+          lose();
+        }
+      }
+
+      for (const e of enemies) {
+        if (!e.alive) continue;
+        e.vy = 0;
+        e.x += e.vx * dt;
+        const feet = { x: e.x + (e.vx > 0 ? e.w : -4), y: e.y + e.h + 2, w: 4, h: 4 };
+        const hasGround = solids.some((s) => s.kind !== "pole" && s.kind !== "door" && collide(feet, s));
+        const hitWall = solids.some((s) => s.kind !== "pole" && s.kind !== "door" && collide(e, s));
+        if (!hasGround || hitWall) {
+          e.vx *= -1;
+          e.x += e.vx * dt * 2;
+        }
+        if (collide(player, e)) {
+          if (player.vy > 80 && player.y + player.h - e.y < 24) {
+            e.alive = false;
+            e.squash = 0.2;
+            player.vy = -300;
+            state.score += 400;
+            state.floaters.push({ x: e.x + e.w / 2, y: e.y, text: "+400", t: 0 });
+            sound("stomp");
+          } else if (player.invuln <= 0) {
+            lose();
+          }
+        }
+      }
+
+      if (player.x > finishX) win();
+
+      state.camera = Math.max(0, Math.min(levelWidth - W, player.x - W * 0.38));
+      state.particles.forEach((p) => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 700 * dt;
+        p.life -= dt;
+      });
+      state.floaters.forEach((f) => {
+        f.t += dt;
+        f.y -= 35 * dt;
+      });
+      state.particles = state.particles.filter((p) => p.life > 0);
+      state.floaters = state.floaters.filter((f) => f.t < 0.75);
+      updateHud();
+    }
+
+    function lose() {
+      if (state.mode !== "play") return;
+      state.mode = "lost";
+      sound("lose");
+      showMessage("Try Again", `Press Enter or tap to restart Level ${state.level + 1}.`);
+    }
+
+    function win() {
+      if (state.mode !== "play") return;
+      state.score += Math.ceil(state.time) * 10;
+      sound("win");
+      updateHud();
+      if (state.level < levels.length - 1) {
+        state.mode = "levelclear";
+        showMessage("Level Clear!", `You reached the door. Press Enter or tap for Level ${state.level + 2}.`);
+      } else {
+        state.mode = "won";
+        showMessage("Quest Complete!", "You cleared every level. Press Enter or tap to start again from Level 1.");
+      }
+    }
+
+    function drawSky() {
+      const grd = ctx.createLinearGradient(0, 0, 0, H);
+      grd.addColorStop(0, "#68bdf6");
+      grd.addColorStop(0.74, "#c9f1ff");
+      grd.addColorStop(0.741, "#7dca55");
+      grd.addColorStop(1, "#5c9f36");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "rgba(255,255,255,.88)";
+      for (let i = 0; i < 7; i++) {
+        const x = ((i * 300 - state.camera * 0.28) % 1100 + 1100) % 1100 - 80;
+        const y = 54 + (i % 3) * 38;
+        cloud(x, y, 1 + (i % 2) * 0.24);
+      }
+    }
+
+    function cloud(x, y, s) {
+      ctx.beginPath();
+      ctx.ellipse(x, y + 22 * s, 34 * s, 18 * s, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + 30 * s, y + 12 * s, 30 * s, 24 * s, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + 66 * s, y + 22 * s, 38 * s, 18 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawDecor() {
+      for (const d of decorations) {
+        const x = d.x - state.camera * (d.type === "hill" ? 0.68 : 0.84);
+        if (x < -180 || x > W + 180) continue;
+        if (d.type === "hill") {
+          ctx.fillStyle = "#58b54f";
+          ctx.strokeStyle = "#2e7e3a";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(x - 110, d.y);
+          ctx.quadraticCurveTo(x, d.y - 130, x + 120, d.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#90db71";
+          ctx.beginPath();
+          ctx.ellipse(x - 26, d.y - 46, 10, 17, 0, 0, Math.PI * 2);
+          ctx.ellipse(x + 34, d.y - 60, 11, 18, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = "#2e9d45";
+          ctx.beginPath();
+          ctx.arc(x, d.y, 28, Math.PI, 0);
+          ctx.arc(x + 34, d.y, 28, Math.PI, 0);
+          ctx.arc(x + 68, d.y, 28, Math.PI, 0);
+          ctx.lineTo(x + 96, d.y);
+          ctx.lineTo(x - 28, d.y);
+          ctx.fill();
+        }
+      }
+    }
+
+    function drawAsset(image, x, y, w, h, flip = false) {
+      if (!image.complete || image.naturalWidth === 0) return false;
+      ctx.save();
+      ctx.shadowColor = "rgba(16, 40, 55, 0.25)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 4;
+      if (flip) {
+        ctx.translate(x + w, y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, 0, 0, w, h);
+      } else {
+        ctx.drawImage(image, x, y, w, h);
+      }
+      ctx.restore();
+      return true;
+    }
+
+    function drawBlock(b) {
+      const x = Math.round(b.x - state.camera);
+      const y = Math.round(b.y);
+      if (x + b.w < -50 || x > W + 50) return;
+      if (b.kind === "ground") {
+        for (let tx = x; tx < x + b.w; tx += 84) {
+          drawAsset(assets.grassBlock, tx, y - 2, 88, 56);
+        }
+        ctx.fillStyle = "#7b4928";
+        ctx.fillRect(x, y + 48, b.w, b.h - 48);
+        ctx.fillStyle = "#5f351f";
+        for (let tx = x; tx < x + b.w; tx += 42) {
+          ctx.fillRect(tx + 6, y + 70, 26, 8);
+        }
+        return;
+      }
+      if (b.kind === "pipe") {
+        for (let ty = y; ty < y + b.h; ty += 34) {
+          drawAsset(assets.grassBlock, x - 8, ty, b.w + 18, 42);
+        }
+        return;
+      }
+      if (b.kind === "stone") {
+        for (let ty = y; ty < y + b.h; ty += 36) {
+          drawAsset(assets.grassBlock, x - 8, ty - 4, b.w + 18, 45);
+        }
+        return;
+      }
+      if (b.kind === "door") {
+        drawAsset(assets.door, x - 10, y - 18, 138, 224);
+        return;
+      }
+      if (b.kind === "question") {
+        ctx.fillStyle = b.used ? "#b9873e" : "#efbd38";
+        ctx.fillRect(x, y, b.w, b.h);
+        ctx.strokeStyle = "#5b371b";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, y, b.w, b.h);
+        if (b.used) {
+          ctx.fillStyle = "#805d35";
+          ctx.font = "900 24px ui-rounded, system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText("·", x + b.w / 2, y + 27);
+        } else {
+          drawAsset(assets.star, x + 4, y + 4, b.w - 8, b.h - 8);
+        }
+        return;
+      }
+      drawAsset(assets.grassBlock, x - 8, y - 6, b.w + 18, b.h + 14);
+    }
+
+    function drawCoin(c) {
+      if (c.taken) return;
+      const x = c.x - state.camera;
+      if (x < -30 || x > W + 30) return;
+      const size = 31 + Math.sin(c.spin) * 3;
+      drawAsset(assets.star, x - size / 2, c.y - size / 2, size, size);
+    }
+
+    function drawEnemy(e) {
+      if (!e.alive) return;
+      const x = e.x - state.camera;
+      if (x < -60 || x > W + 60) return;
+      drawAsset(assets.monster, x - 12, e.y - 20, e.w + 24, e.h + 28, e.vx > 0);
+    }
+
+    function drawHazard(h) {
+      const x = h.x - state.camera;
+      if (x < -120 || x > W + 120) return;
+      drawAsset(assets.spikes, x, h.y - 34, h.w, h.h + 34);
+    }
+
+    function drawPlayer() {
+      const x = Math.round(player.x - state.camera);
+      const y = Math.round(player.y);
+      const blink = player.invuln > 0 && Math.floor(performance.now() / 90) % 2 === 0;
+      if (blink) return;
+      drawAsset(assets.kiwi, x - 18, y - 24, player.w + 34, player.h + 28, player.dir < 0);
+    }
+
+    function drawEffects() {
+      for (const p of state.particles) {
+        const x = p.x - state.camera;
+        if (p.coin) {
+          drawAsset(assets.star, x - 13, p.y - 13, 26, 26);
+        }
+      }
+      ctx.font = "900 16px ui-rounded, system-ui";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#fff7dc";
+      ctx.strokeStyle = "#203343";
+      ctx.lineWidth = 4;
+      for (const f of state.floaters) {
+        const x = f.x - state.camera;
+        ctx.strokeText(f.text, x, f.y);
+        ctx.fillText(f.text, x, f.y);
+      }
+    }
+
+    function render() {
+      drawSky();
+      drawDecor();
+      solids.forEach(drawBlock);
+      coins.forEach(drawCoin);
+      hazards.forEach(drawHazard);
+      enemies.forEach(drawEnemy);
+      drawPlayer();
+      drawEffects();
+    }
+
+    function frame(now) {
+      const dt = Math.min(0.033, (now - state.lastTick) / 1000 || 0);
+      state.lastTick = now;
+      update(dt);
+      render();
+      requestAnimationFrame(frame);
+    }
+
+    function keyMap(code) {
+      if (code === "ArrowLeft" || code === "KeyA") return "left";
+      if (code === "ArrowRight" || code === "KeyD") return "right";
+      if (code === "ArrowUp" || code === "KeyW" || code === "Space") return "jump";
+      return null;
+    }
+
+    addEventListener("keydown", (e) => {
+      if (e.code === "Enter") startGame();
+      const key = keyMap(e.code);
+      if (key) {
+        e.preventDefault();
+        keys[key] = true;
+        if (state.mode !== "play") startGame();
+      }
+    });
+
+    addEventListener("keyup", (e) => {
+      const key = keyMap(e.code);
+      if (key) keys[key] = false;
+    });
+
+    document.querySelectorAll("[data-key]").forEach((button) => {
+      const key = button.dataset.key;
+      const down = (e) => {
+        e.preventDefault();
+        keys[key] = true;
+        startGame();
+      };
+      const up = (e) => {
+        e.preventDefault();
+        keys[key] = false;
+      };
+      button.addEventListener("pointerdown", down);
+      button.addEventListener("pointerup", up);
+      button.addEventListener("pointercancel", up);
+      button.addEventListener("pointerleave", up);
+    });
+
+    canvas.addEventListener("pointerdown", startGame);
+    restartButton.addEventListener("click", () => {
+      resetLevel("play", { newGame: state.mode === "won", fromCheckpoint: state.mode !== "won" });
+      message.hidden = true;
+    });
+    muteButton.addEventListener("click", () => {
+      state.muted = !state.muted;
+      muteButton.textContent = state.muted ? "×" : "♪";
+    });
+
+    resetLevel("ready", { newGame: true });
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

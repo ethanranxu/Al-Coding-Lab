@@ -226,6 +226,50 @@
       box-shadow: 0 8px 18px rgba(23, 105, 255, 0.1);
     }
 
+    .card-btn.like-btn {
+      flex: 0 0 auto;
+      min-width: 80px;
+      padding: 0 16px;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 2px solid var(--line);
+      color: var(--muted);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card-btn.like-btn:hover {
+      border-color: #ff4757;
+      color: #ff4757;
+      background: rgba(255, 71, 87, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .card-btn.like-btn.liked {
+      background: #ff4757;
+      border-color: #ff4757;
+      color: #ffffff;
+      box-shadow: 0 6px 15px rgba(255, 71, 87, 0.25);
+    }
+
+    .like-icon {
+      font-size: 16px;
+      transition: transform 0.2s ease;
+    }
+
+    .card-btn.like-btn.liked .like-icon {
+      animation: heartbeat 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.4); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+
     /* 占位卡片样式（未创作作品的学生） */
     .placeholder-card {
       background: linear-gradient(180deg, #ffffff 0%, var(--sky) 100%);
@@ -565,6 +609,23 @@
           const coverWork = person.works[randomIndex];
           const workCount = person.works.length;
           
+          // 初始化本地存储点赞数（默认初始值营造人气，且不大于 8）
+          const likesKey = `likes_${person.name}`;
+          const likedKey = `liked_${person.name}`;
+          let defaultLikes = 3;
+          if (person.name === "Ethan") defaultLikes = 8;
+          else if (person.name === "Louis") defaultLikes = 3;
+          else if (person.name === "Ryan") defaultLikes = 6;
+          else if (person.name === "William") defaultLikes = 4;
+
+          const currentStored = localStorage.getItem(likesKey);
+          if (currentStored === null || parseInt(currentStored, 10) > 8) {
+            localStorage.setItem(likesKey, defaultLikes);
+            localStorage.setItem(likedKey, "false");
+          }
+          const likesCount = localStorage.getItem(likesKey);
+          const isLiked = localStorage.getItem(likedKey) === "true";
+          
           return `
             <article class="portfolio-card ${isTeacher ? 'teacher-card' : ''}">
               <span class="badge-role ${person.role}">${isTeacher ? 'Teacher' : 'Student'}</span>
@@ -577,6 +638,10 @@
                 <p class="card-desc">在本次假期营中，完成了包含网页制作、AI 协作和横版游戏开发等多项编程挑战，共创作了 ${workCount} 个优秀作品。</p>
                 <div class="card-actions">
                   <button class="card-btn primary" onclick="openPortfolioModal(${index})">查看作品集 (${workCount})</button>
+                  <button class="card-btn like-btn ${isLiked ? 'liked' : ''}" onclick="likePerson(event, '${person.name}')" id="likeBtn-${person.name}" aria-label="点赞">
+                    <span class="like-icon">❤️</span>
+                    <span class="like-count" id="likeCount-${person.name}">${likesCount}</span>
+                  </button>
                 </div>
               </div>
             </article>
@@ -600,6 +665,33 @@
           `;
         }
       }).join("");
+
+      // 点赞交互实现
+      window.likePerson = function(event, name) {
+        event.stopPropagation();
+        const likesKey = `likes_${name}`;
+        const likedKey = `liked_${name}`;
+        
+        let likes = parseInt(localStorage.getItem(likesKey) || "0", 10);
+        let isLiked = localStorage.getItem(likedKey) === "true";
+        
+        const btn = document.getElementById(`likeBtn-${name}`);
+        const countSpan = document.getElementById(`likeCount-${name}`);
+        
+        if (isLiked) {
+          likes = Math.max(0, likes - 1);
+          localStorage.setItem(likesKey, likes);
+          localStorage.setItem(likedKey, "false");
+          if (btn) btn.classList.remove("liked");
+        } else {
+          likes += 1;
+          localStorage.setItem(likesKey, likes);
+          localStorage.setItem(likedKey, "true");
+          if (btn) btn.classList.add("liked");
+        }
+        
+        if (countSpan) countSpan.textContent = likes;
+      };
 
       // 弹窗打开方法
       window.openPortfolioModal = function(index) {

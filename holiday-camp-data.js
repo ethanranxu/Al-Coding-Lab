@@ -12,61 +12,64 @@ window.holidayCampData = [
     ]
   },
   {
-    "name": "Leo Y.",
+    "name": "Louis",
     "role": "student",
-    "works": []
+    "works": [
+      {
+        "title": "Kiwi Platform Quest",
+        "url": "Portfolio/2026Term2HolidayCamp/Louis/Kiwi Platform Quest/index.html",
+        "screenshot": "Portfolio/2026Term2HolidayCamp/Louis/Kiwi Platform Quest/screenshot.png"
+      }
+    ]
   },
   {
-    "name": "Mia C.",
+    "name": "Ryan",
     "role": "student",
-    "works": []
+    "works": [
+      {
+        "title": "Kiwi Platform Quest",
+        "url": "Portfolio/2026Term2HolidayCamp/Ryan/Kiwi Platform Quest/index.html",
+        "screenshot": "Portfolio/2026Term2HolidayCamp/Ryan/Kiwi Platform Quest/screenshot.png"
+      }
+    ]
   },
   {
-    "name": "Noah L.",
+    "name": "William",
     "role": "student",
-    "works": []
-  },
-  {
-    "name": "Ava T.",
-    "role": "student",
-    "works": []
-  },
-  {
-    "name": "Oliver S.",
-    "role": "student",
-    "works": []
+    "works": [
+      {
+        "title": "Kiwi Platform Quest",
+        "url": "Portfolio/2026Term2HolidayCamp/William/Kiwi Platform Quest/super-plumber-level-1.html",
+        "screenshot": "Portfolio/2026Term2HolidayCamp/William/Kiwi Platform Quest/screenshot.png"
+      }
+    ]
   }
 ];
 
 window.materialsData = [
   {
-    "name": "kiwi-quest-hero.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-hero.png",
-    "size": "237.1 KB"
+    "name": "enemy-blue-raw.png",
+    "url": "Materials/enemy-blue-raw.png",
+    "size": "1.5 MB"
   },
   {
-    "name": "kiwi-quest-enemy.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-enemy.png",
-    "size": "275.0 KB"
+    "name": "enemy-blue-transparent.png",
+    "url": "Materials/enemy-blue-transparent.png",
+    "size": "760.3 KB"
   },
   {
-    "name": "kiwi-quest-platform.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-platform.png",
-    "size": "278.6 KB"
+    "name": "game-background-city.png",
+    "url": "Materials/game-background-city.png",
+    "size": "1.7 MB"
   },
   {
-    "name": "kiwi-quest-door.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-door.png",
-    "size": "235.2 KB"
+    "name": "kiwi-platform-assets-sheet-transparent.png",
+    "url": "Materials/kiwi-platform-assets-sheet-transparent.png",
+    "size": "1.1 MB"
   },
   {
-    "name": "kiwi-quest-star.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-star.png",
-    "size": "167.4 KB"
-  },
-  {
-    "name": "kiwi-quest-spikes.png",
-    "url": "Portfolio/2026Term2HolidayCamp/Ethan/Kiwi Platform Quest/assets/kiwi-quest-spikes.png",
-    "size": "119.1 KB"
+    "name": "kiwi-platform-assets-sheet.png",
+    "url": "Materials/kiwi-platform-assets-sheet.png",
+    "size": "1.5 MB"
   }
 ];

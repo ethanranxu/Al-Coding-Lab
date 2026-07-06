@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kiwi Platform Quest</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="hud" aria-label="游戏状态">
+        <div>
+          <span>星星</span>
+          <strong id="coins">0</strong>
+        </div>
+        <div>
+          <span>生命</span>
+          <strong id="lives">3</strong>
+        </div>
+        <div>
+          <span>时间</span>
+          <strong id="time">300</strong>
+        </div>
+        <button id="audio-toggle" type="button" aria-label="音乐开关">♪</button>
+        <button id="restart" type="button" aria-label="重新开始">↻</button>
+      </section>
+
+      <canvas id="game" width="960" height="540" aria-label="横版平台跳跃游戏"></canvas>
+
+      <section class="mobile-controls" aria-label="触控操作">
+        <button data-hold="left" aria-label="向左">◀</button>
+        <button data-hold="right" aria-label="向右">▶</button>
+        <button data-tap="jump" aria-label="跳跃">▲</button>
+        <button data-hold="run" aria-label="冲刺">◆</button>
+      </section>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>

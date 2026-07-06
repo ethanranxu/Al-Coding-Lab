@@ -1,0 +1,157 @@
+:root {
+  color-scheme: light;
+  --ink: #172133;
+  --panel: #fff8df;
+  --panel-2: #f8d268;
+  --accent: #df3131;
+  --grass: #54b448;
+  --sky: #79c9ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  overflow: hidden;
+  background:
+    linear-gradient(#6dbaf6 0 58%, #8bd76b 58% 100%);
+  color: var(--ink);
+  font-family:
+    "Trebuchet MS",
+    "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+}
+
+.game-shell {
+  width: min(100%, 1120px);
+  display: grid;
+  gap: 10px;
+}
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 3px solid #7a3f1b;
+  box-shadow: 0 6px 0 #4e2812;
+}
+
+.hud div {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 92px;
+  padding: 6px 9px;
+  background: #fffdf6;
+  border: 2px solid rgba(122, 63, 27, 0.25);
+}
+
+.hud span {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hud strong {
+  min-width: 36px;
+  font-size: 22px;
+  line-height: 1;
+  text-align: right;
+  color: #287048;
+}
+
+#audio-toggle,
+#restart {
+  width: 42px;
+  height: 38px;
+  border: 0;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: inset 0 -4px rgba(0, 0, 0, 0.22);
+}
+
+#audio-toggle {
+  margin-left: auto;
+  background: #2474c9;
+}
+
+#audio-toggle.is-muted {
+  background: #6f7785;
+}
+
+#restart {
+  background: var(--accent);
+}
+
+#game {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  image-rendering: pixelated;
+  background: var(--sky);
+  border: 3px solid #7a3f1b;
+  box-shadow: 0 9px 0 #4e2812;
+}
+
+.mobile-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(52px, 1fr));
+  gap: 8px;
+}
+
+.mobile-controls button {
+  min-height: 50px;
+  border: 0;
+  background: #fff7df;
+  color: #20314f;
+  font-size: 22px;
+  font-weight: 900;
+  box-shadow: inset 0 -5px rgba(0, 0, 0, 0.16);
+  touch-action: none;
+}
+
+.mobile-controls button:active,
+#audio-toggle:active,
+#restart:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -2px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 760px) {
+  .mobile-controls {
+    grid-template-columns: repeat(4, 76px);
+    justify-content: center;
+  }
+}
+
+@media (max-height: 680px) {
+  body {
+    align-items: start;
+  }
+
+  .hud {
+    min-height: 46px;
+  }
+
+  .mobile-controls button {
+    min-height: 42px;
+  }
+}

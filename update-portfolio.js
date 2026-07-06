@@ -7,7 +7,7 @@ const MATERIALS_DIR = path.join(__dirname, 'Materials');
 const OUTPUT_FILE = path.join(__dirname, 'holiday-camp-data.js');
 
 // 默认补全的学生名单
-const DEFAULT_STUDENTS = ["Leo Y.", "Mia C.", "Noah L.", "Ava T.", "Oliver S."];
+const DEFAULT_STUDENTS = [];
 
 function formatBytes(bytes) {
   if (bytes === 0) return '0 Bytes';
@@ -128,12 +128,31 @@ function scanPortfolio() {
             }
           }
 
+          let downloadUrlFile = null;
+          if (isTeacher) {
+            const downloadImages = images.filter(f => f.toLowerCase().includes('assets'));
+            if (downloadImages.length > 0) {
+              downloadUrlFile = path.join('Portfolio', '2026Term2HolidayCamp', name, workTitle, downloadImages[0]);
+            } else if (fs.existsSync(assetsPath) && fs.statSync(assetsPath).isDirectory()) {
+              const assetsFiles = fs.readdirSync(assetsPath);
+              const assetImages = assetsFiles.filter(f => {
+                const ext = path.extname(f).toLowerCase();
+                return ['.png', '.jpg', '.jpeg', '.webp'].includes(ext);
+              });
+              const downloadAssetImages = assetImages.filter(f => f.toLowerCase().includes('assets'));
+              if (downloadAssetImages.length > 0) {
+                downloadUrlFile = path.join('Portfolio', '2026Term2HolidayCamp', name, workTitle, 'assets', downloadAssetImages[0]);
+              }
+            }
+          }
+
           if (htmlFile) {
             const urlPath = path.join('Portfolio', '2026Term2HolidayCamp', name, workTitle, htmlFile);
             works.push({
               title: workTitle,
               url: urlPath.replace(/\\/g, '/'),
-              screenshot: screenshotFile ? screenshotFile.replace(/\\/g, '/') : ''
+              screenshot: screenshotFile ? screenshotFile.replace(/\\/g, '/') : '',
+              ...(downloadUrlFile ? { downloadUrl: downloadUrlFile.replace(/\\/g, '/') } : {})
             });
           }
         }

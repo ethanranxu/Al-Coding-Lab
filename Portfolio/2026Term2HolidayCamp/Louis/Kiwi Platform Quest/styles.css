@@ -1,0 +1,192 @@
+:root {
+  color-scheme: light;
+  --ink: #132034;
+  --muted: #516170;
+  --panel: rgba(255, 255, 255, 0.88);
+  --line: rgba(19, 32, 52, 0.16);
+  --sky: #9ed9ff;
+  --green: #4f9f4a;
+  --gold: #f7bd28;
+  --red: #df3432;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(#86cffb 0 55%, #d9f5ff 55% 56%, #93cf64 56% 100%);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.game-shell {
+  width: min(1180px, calc(100vw - 24px));
+  display: grid;
+  gap: 10px;
+}
+
+.hud,
+.controls {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 14px 40px rgba(19, 32, 52, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.brand,
+.stats {
+  font-weight: 800;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6a4 0 24%, var(--gold) 25% 65%, #c17612 66%);
+  box-shadow: 0 0 0 3px rgba(247, 189, 40, 0.18);
+}
+
+.stats {
+  display: flex;
+  gap: 18px;
+  color: #26374a;
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 4px solid #1c2d45;
+  border-radius: 8px;
+  background: var(--sky);
+  box-shadow: 0 24px 70px rgba(19, 32, 52, 0.26);
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: auto;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(142, 214, 255, 0.62);
+  color: #132034;
+  text-align: center;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 4.6rem);
+  line-height: 0.98;
+}
+
+.overlay p {
+  margin: 0;
+  max-width: 560px;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 700;
+}
+
+button {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--red);
+  color: white;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #9a1d1b, 0 16px 22px rgba(154, 29, 27, 0.25);
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 5px 0 #9a1d1b, 0 10px 16px rgba(154, 29, 27, 0.2);
+}
+
+.controls {
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.pad {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button,
+.jump-button {
+  width: 52px;
+  min-height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #1c2d45;
+  box-shadow: 0 5px 0 #0e1724, 0 10px 18px rgba(19, 32, 52, 0.18);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.jump-button {
+  background: var(--red);
+  box-shadow: 0 5px 0 #9a1d1b, 0 10px 18px rgba(154, 29, 27, 0.18);
+}
+
+@media (max-width: 720px) {
+  body {
+    align-content: start;
+    padding-top: 10px;
+  }
+
+  .hud {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stats {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.88rem;
+  }
+
+  .icon-button,
+  .jump-button {
+    width: 48px;
+  }
+}
