@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系统访问日志 - Ethan AI Coding Lab</title>
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --panel-dark: rgba(30, 41, 59, 0.7);
+      --border-dark: rgba(255, 255, 255, 0.08);
+      --accent-danger: #ef4444;
+      --accent-success: #10b981;
+    }
+
+    body.log-body {
+      background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-dark) 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* 锁屏界面样式 */
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .lock-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .lock-box {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border-dark);
+      border-radius: 24px;
+      padding: 40px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .lock-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite alternate;
+    }
+
+    .lock-box h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .lock-box p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 0 0 24px 0;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.6);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .password-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 15px rgba(23, 105, 255, 0.25);
+    }
+
+    .password-input.error {
+      animation: shake 0.4s ease-in-out;
+      border-color: var(--accent-danger);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+    }
+
+    .unlock-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue), #4b9dff);
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(23, 105, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .unlock-btn:hover {
+      box-shadow: 0 12px 24px rgba(23, 105, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* 日志主界面 */
+    .dashboard {
+      flex-grow: 1;
+      padding: 40px clamp(20px, 4vw, 64px);
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+    }
+
+    .dashboard.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .dash-header h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-danger {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-danger);
+      background: rgba(239, 68, 68, 0.08);
+      color: #f87171;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-danger:hover {
+      background: var(--accent-danger);
+      color: #fff;
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.25);
+    }
+
+    /* 统计卡片 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--panel-dark);
+      border: 1px solid var(--border-dark);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--blue);
+    }
+
+    .stat-card.orange::before { background: #f97316; }
+    .stat-card.green::before { background: var(--accent-success); }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .stat-val {
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* 表格样式 */
+    .table-container {
+      background: var(--panel-dark);
+      border: 1px solid var(--border-dark);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.4);
+      padding: 16px 24px;
+      font-weight: 700;
+      color: #94a3b8;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-dark);
+      color: #cbd5e1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: #fff;
+    }
+
+    .empty-state {
+      padding: 60px 24px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    /* 动画 */
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body class="log-body">
+
+  <!-- 密码锁屏层 -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div class="lock-icon">🔒</div>
+      <h2>身份验证</h2>
+      <p>请输入安全密码进入访问日志后台</p>
+      <div class="input-group">
+        <input type="password" id="password" class="password-input" placeholder="••••••" maxlength="12" autocomplete="current-password">
+      </div>
+      <button class="unlock-btn" id="unlockBtn">确认进入</button>
+    </div>
+  </div>
+
+  <!-- 日志主体区 -->
+  <main class="dashboard" id="dashboard">
+    <div class="dash-header">
+      <div>
+        <h1>系统访问日志</h1>
+        <p style="color: #64748b; margin: 4px 0 0 0; font-size: 14px;">实时记录全站用户的访问 IP、页面及停留时间</p>
+      </div>
+      <button class="btn-danger" id="clearBtn">清除所有日志</button>
+    </div>
+
+    <!-- 统计卡片区 -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">总访问量 (Page Views)</span>
+        <span class="stat-val" id="statPv">0</span>
+      </div>
+      <div class="stat-card orange">
+        <span class="stat-label">独立访客 (Unique IPs)</span>
+        <span class="stat-val" id="statUv">0</span>
+      </div>
+      <div class="stat-card green">
+        <span class="stat-label">平均停留时间</span>
+        <span class="stat-val" id="statAvgTime">0秒</span>
+      </div>
+    </div>
+
+    <!-- 日志明细表格 -->
+    <div class="table-container">
+      <table id="logTable">
+        <thead>
+          <tr>
+            <th style="width: 80px;">序号</th>
+            <th>访客 IP 地址</th>
+            <th>被访问页面</th>
+            <th>访问时间</th>
+            <th style="text-align: right;">停留时长</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          <!-- 动态填充 -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const lockScreen = document.getElementById("lockScreen");
+      const passwordInput = document.getElementById("password");
+      const unlockBtn = document.getElementById("unlockBtn");
+      const dashboard = document.getElementById("dashboard");
+      const clearBtn = document.getElementById("clearBtn");
+
+      // 验证静态密码 666888
+      const CORRECT_PASS = "666888";
+
+      // 检查 sessionStorage 是否已经解锁过
+      if (sessionStorage.getItem("log_unlocked") === "true") {
+        showDashboard();
+      }
+
+      // 确认密码
+      function verifyPassword() {
+        const value = passwordInput.value;
+        if (value === CORRECT_PASS) {
+          sessionStorage.setItem("log_unlocked", "true");
+          showDashboard();
+        } else {
+          // 触发抖动反馈
+          passwordInput.classList.add("error");
+          passwordInput.value = "";
+          setTimeout(() => {
+            passwordInput.classList.remove("error");
+            passwordInput.focus();
+          }, 500);
+        }
+      }
+
+      function showDashboard() {
+        lockScreen.classList.add("hidden");
+        dashboard.classList.add("visible");
+        renderLogs();
+      }
+
+      unlockBtn.addEventListener("click", verifyPassword);
+      passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") verifyPassword();
+      });
+
+      // 渲染日志列表及统计
+      function renderLogs() {
+        const logBody = document.getElementById("logBody");
+        const statPv = document.getElementById("statPv");
+        const statUv = document.getElementById("statUv");
+        const statAvgTime = document.getElementById("statAvgTime");
+
+        let logs = [];
+        try {
+          logs = JSON.parse(localStorage.getItem("visit_logs") || "[]");
+        } catch (e) {
+          logs = [];
+        }
+
+        // 按时间倒序排序 (最新日志在前)
+        logs.reverse();
+
+        // 渲染统计
+        const pv = logs.length;
+        const uniqueIps = new Set(logs.map(l => l.ip)).size;
+        let avgTime = 0;
+        if (pv > 0) {
+          const totalDuration = logs.reduce((acc, curr) => acc + (parseInt(curr.duration, 10) || 0), 0);
+          avgTime = Math.round(totalDuration / pv);
+        }
+
+        statPv.textContent = pv;
+        statUv.textContent = uniqueIps;
+        statAvgTime.textContent = avgTime + "秒";
+
+        if (pv === 0) {
+          logBody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-state">
+                <div class="empty-icon">📊</div>
+                <div>暂无访问日志记录</div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        logBody.innerHTML = logs.map((log, index) => {
+          // 格式化时间段
+          let durText = log.duration + "秒";
+          if (log.duration >= 60) {
+            const m = Math.floor(log.duration / 60);
+            const s = log.duration % 60;
+            durText = `${m}分${s}秒`;
+          }
+
+          return `
+            <tr>
+              <td>${index + 1}</td>
+              <td style="font-family: monospace; font-weight: 700; color: #60a5fa;">${log.ip}</td>
+              <td style="color: #38bdf8;">${log.page}</td>
+              <td>${log.time}</td>
+              <td style="text-align: right; font-weight: 700; color: #34d399;">${durText}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // 清空日志
+      clearBtn.addEventListener("click", () => {
+        if (confirm("确定要清空所有的访问日志吗？此操作不可恢复。")) {
+          localStorage.removeItem("visit_logs");
+          renderLogs();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
